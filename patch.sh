@@ -39,3 +39,27 @@ else
 fi
 
 echo "Patch completo. Podes fazer: docker build -t ghcr.io/stratechna/stratechna-events:latest ."
+
+# Gerar favicon.ico válido com Python (requer Pillow instalado pelo workflow)
+python3 - << 'PYEOF'
+from PIL import Image
+import struct, io
+
+img = Image.open("branding/logos/Stratechna_Events.png").convert("RGBA")
+sizes = [(16,16),(32,32),(48,48)]
+images = []
+for size in sizes:
+    buf = io.BytesIO()
+    img.resize(size, Image.LANCZOS).save(buf, format="PNG")
+    images.append(buf.getvalue())
+
+with open("branding/client/favicons/favicon.ico", "wb") as f:
+    f.write(struct.pack("<HHH", 0, 1, len(sizes)))
+    offset = 6 + len(sizes) * 16
+    for (w,h), data in zip(sizes, images):
+        f.write(struct.pack("<BBBBHHII", w, h, 0, 0, 1, 32, len(data), offset))
+        offset += len(data)
+    for data in images:
+        f.write(data)
+print("favicon.ico gerado com Pillow")
+PYEOF
