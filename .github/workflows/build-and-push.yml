@@ -1,9 +1,14 @@
-name: Build and Push Stratechna Events
+name: Build Stratechna Events
 
+# Sem rebuild agendado: a versão do Hi.Events está fixa no Dockerfile e só muda
+# de propósito. O workflow upstream.yml abre um issue quando sai versão nova.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+env:
+  IMAGEM: ghcr.io/stratechna/stratechna-events
 
 jobs:
   build:
@@ -11,30 +16,27 @@ jobs:
     permissions:
       contents: read
       packages: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install imagemagick
-        run: sudo apt-get install -y imagemagick python3-pil
-
-      - name: Run patch script
+      - name: Versão fixada do Hi.Events
+        id: v
         run: |
-          chmod +x patch.sh
-          ./patch.sh
+          V=$(sed -nE 's/^ARG HIEVENTS_VERSION=v?([0-9]+\.[0-9]+\.[0-9]+[A-Za-z0-9.-]*)$/\1/p' Dockerfile)
+          test -n "$V" || { echo "HIEVENTS_VERSION não encontrada no Dockerfile"; exit 1; }
+          echo "versao=$V" >> "$GITHUB_OUTPUT"
+          echo "minor=$(echo "$V" | cut -d. -f1,2)" >> "$GITHUB_OUTPUT"
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build (o aplicar.py falha se alguma troca deixar de encaixar)
+        run: docker build --pull -t events:teste --label org.opencontainers.image.revision=${{ github.sha }} .
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          no-cache: true
-          tags: ghcr.io/stratechna/stratechna-events:latest
+      - name: Verificar a marca e a atribuição na imagem construída
+        run: bash branding/verificar.sh events:teste
+
+      - name: Publicar (só chega aqui se a verificação passou)
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for tag in ${{ steps.v.outputs.versao }} ${{ steps.v.outputs.minor }} latest; do
+            docker tag events:teste "$IMAGEM:$tag"
+            docker push -q "$IMAGEM:$tag"
+          done
