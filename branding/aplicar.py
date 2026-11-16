@@ -112,6 +112,36 @@ cli = FRONT / "client"
 for t in ("16x16", "32x32", "48x48", "192x192", "512x512"):
     shutil.copy(PROPRIOS / "manifest-icons/stratechna-events.png", cli / f"manifest-icons/favicon-{t}.png")
 
+# ── 4b. Aspecto: paleta e DM Sans servidas pela própria app ────────────────
+# Folha e letras em /stratechna/ (o sirv do server.js serve dist/client). A
+# folha de letras do fonts.bunny.net (Outfit, de fora) dá lugar à nossa — nada
+# de letras de terceiros (RGPD). As cores-base vêm das VITE_* do Dockerfile.
+shutil.copytree(PROPRIOS / "stratechna", cli / "stratechna", dirs_exist_ok=True)
+trocar(cli / "index.html",
+       re.compile(r'<link\s+rel="stylesheet"\s+href="https://fonts\.bunny\.net/css\?[^"]*"\s*/>'),
+       '<link rel="stylesheet" href="/stratechna/aspecto.css?v=1" />', regex=True)
+trocar(cli / "index.html", '<meta name="theme-color" content="#cd58dd">',
+       '<meta name="theme-color" content="#1a2a33">')
+# As páginas públicas dos eventos escolhem a letra numa lista (themeUtils) e vão
+# buscá-la ao fonts.bunny.net; a letra por omissão passa a DM Sans e essa, só
+# essa, é servida por nós. As outras continuam opção do organizador.
+n_tema = 0
+for f in sorted(FRONT.rglob("themeUtils-*.js")):
+    # minificado no cliente (m="Outfit"), legível no servidor (DEFAULT_HOMEPAGE_FONT)
+    n_tema += trocar(f, re.compile(r'(\bm=|const DEFAULT_HOMEPAGE_FONT = )"Outfit"'),
+                     lambda m: m.group(1) + '"DM Sans"', minimo=0, regex=True)
+    n_tema += trocar(f, re.compile(r'return\s*`https://fonts\.bunny\.net/css\?family=\$\{(\w+)\.bunnyFamily\}:\$\{\1\.weights\}&display=swap`'),
+                     lambda m: (f'return {m.group(1)}.bunnyFamily==="dm-sans"?"/stratechna/fonts.css":'
+                                f'`https://fonts.bunny.net/css?family=${{{m.group(1)}.bunnyFamily}}:${{{m.group(1)}.weights}}&display=swap`'),
+                     minimo=0, regex=True)
+if n_tema < 4:
+    erros.append(f"themeUtils: {n_tema} trocas da letra das páginas públicas, esperado >= 4 (cliente e servidor)")
+for f in ("aspecto.css", "fonts.css", "fonts/dm-sans-latin-wght-normal.woff2"):
+    if not (cli / "stratechna" / f).exists():
+        erros.append(f"stratechna/{f} em falta")
+if "fonts.bunny.net" in (cli / "index.html").read_text(encoding="utf-8"):
+    erros.append("index.html ainda pede letras ao fonts.bunny.net")
+
 # ── 5. Verificação final ────────────────────────────────────────────────────
 svgs = sorted(FRONT.rglob("*.svg"))
 sobras = {str(f.relative_to(FRONT)): f.read_text(encoding="utf-8", errors="ignore").count(UPSTREAM)

@@ -1,0 +1,68 @@
+/* Stratechna Events — paleta e letra Stratechna sobre o Hi.Events.
+ *
+ * Ficheiro próprio servido de /stratechna/ e ligado no index.html no lugar da
+ * folha de letras do fonts.bunny.net (aplicar.py). As cores-base entram pela
+ * configuração oficial (VITE_APP_PRIMARY_COLOR / VITE_APP_SECONDARY_COLOR, no
+ * Dockerfile); aqui só se acertam os degraus que o gerador do Mantine não
+ * acerta e a letra. `html:root` ganha ao `:root` que o Mantine injecta.
+ *
+ * Regra (docs/PLANO-ASPECTO-ORBIT-APPS.md §1): ardósia na estrutura, vermelho
+ * #b20009 só no botão principal, cores de informação intactas, DM Sans servida
+ * pela própria app (RGPD).
+ */
+@import url("fonts.css?v=1");
+
+html:root {
+  --mantine-font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mantine-font-family-headings: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Cinzentos do Mantine → ardósia (matiz 235), mesma luminosidade */
+  --mantine-color-gray-0: #f6f9fc;
+  --mantine-color-gray-1: #f0f3f6;
+  --mantine-color-gray-2: #e8ecef;
+  --mantine-color-gray-3: #dde2e5;
+  --mantine-color-gray-4: #ced4d8;
+  --mantine-color-gray-5: #aeb5ba;
+  --mantine-color-gray-6: #858f95;
+  --mantine-color-gray-7: #445159;
+  --mantine-color-gray-8: #2d3b44;
+  --mantine-color-gray-9: #18272f;
+
+  /* Cinzentos próprios do Hi.Events */
+  --hi-color-gray: #f4f7f9;
+  --hi-color-gray-2: #dee3e6;
+  --hi-color-gray-dark: #7b858b;
+  --hi-scrollbar-thumb: #dde2e5;
+  /* o realce «secundário» era um rosa claro: passa a ardósia — o vermelho é só acção */
+  --hi-secondary: #eff3f6;
+
+  /* Acção: o botão principal (filled) a #b20009 exacto */
+  --mantine-primary-color-filled: #b20009;
+  --mantine-primary-color-filled-hover: #8c0007;
+  --mantine-color-primary-filled: #b20009;
+  --mantine-color-primary-filled-hover: #8c0007;
+  --mantine-color-secondary-5: #b20009;
+  --mantine-color-secondary-6: #8c0007;
+  --mantine-color-secondary-7: #730006;
+  --mantine-color-secondary-filled: #b20009;
+  --mantine-color-secondary-filled-hover: #8c0007;
+}
+
+/* Controlos que usam a cor «primary» sem serem acção (caixas, interruptores,
+ * separadores, distintivos, paginação, passos, barras): estrutura, não vermelho. */
+.mantine-Checkbox-root, .mantine-Switch-root, .mantine-Radio-root,
+.mantine-Chip-root, .mantine-SegmentedControl-root, .mantine-Tabs-root,
+.mantine-Badge-root, .mantine-Pagination-root, .mantine-Stepper-root,
+.mantine-Progress-root, .mantine-Loader-root, .mantine-NavLink-root,
+.mantine-Indicator-root, .mantine-Slider-root, .mantine-ThemeIcon-root,
+.mantine-Avatar-root {
+  --mantine-primary-color-filled: #2c414e;
+  --mantine-primary-color-filled-hover: #22343f;
+  --mantine-color-primary-filled: #2c414e;
+  --mantine-color-primary-filled-hover: #22343f;
+}
+
+html body, button, input, select, textarea {
+  font-family: var(--mantine-font-family);
+}
+::selection { background: rgba(178, 0, 9, .16); }

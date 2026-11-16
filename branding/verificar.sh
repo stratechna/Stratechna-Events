@@ -62,6 +62,16 @@ done
 [ "$(curl -fs "$B/favicon.ico" | sha256sum | cut -c1-16)" = "$(sha256sum < "$DIR/ficheiros/favicon.ico" | cut -c1-16)" ] \
   && ok "favicon.ico é o nosso" || falha "favicon.ico não é o nosso"
 
+echo "== aspecto Stratechna (folha própria e DM Sans servida pela app) =="
+printf '%s' "$H" | grep -q 'href="/stratechna/aspecto.css' && ok "login liga a folha aspecto.css" || falha "login sem a folha aspecto.css"
+printf '%s' "$H" | grep -q 'fonts.bunny.net\|fonts.googleapis' && falha "login ainda pede letras de fora" || ok "login sem letras de fora"
+A=$(curl -fsS "$B/stratechna/aspecto.css")
+echo "$A" | grep -q -- '--mantine-color-secondary-5: #b20009' && ok "aspecto.css servida com as fichas" || falha "aspecto.css não servida"
+curl -fsS "$B/stratechna/fonts.css" | grep -q 'DM Sans' && ok "fonts.css servida" || falha "fonts.css não servida"
+W=$(curl -fsS "$B/stratechna/fonts/dm-sans-latin-wght-normal.woff2" | head -c 4)
+[ "$W" = "wOF2" ] && ok "woff2 servida" || falha "woff2 não servida («$W»)"
+printf '%s' "$H" | grep -q '"VITE_APP_SECONDARY_COLOR":"#b20009"' && ok "cor de acção na configuração" || falha "VITE_APP_SECONDARY_COLOR não é #b20009"
+
 echo "== por dentro =="
 docker exec $ID-app grep -q "Powered by Stratechna Events / <a" /app/backend/resources/views/vendor/mail/html/message.blade.php \
   && ok "emails: «Powered by Stratechna Events / Hi.Events»" || falha "atribuição dos emails em falta"
