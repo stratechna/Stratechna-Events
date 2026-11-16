@@ -119,7 +119,7 @@ for t in ("16x16", "32x32", "48x48", "192x192", "512x512"):
 shutil.copytree(PROPRIOS / "stratechna", cli / "stratechna", dirs_exist_ok=True)
 trocar(cli / "index.html",
        re.compile(r'<link\s+rel="stylesheet"\s+href="https://fonts\.bunny\.net/css\?[^"]*"\s*/>'),
-       '<link rel="stylesheet" href="/stratechna/aspecto.css?v=1" />', regex=True)
+       '<link rel="stylesheet" href="/stratechna/aspecto.css?v=2" />', regex=True)
 trocar(cli / "index.html", '<meta name="theme-color" content="#cd58dd">',
        '<meta name="theme-color" content="#1a2a33">')
 # As páginas públicas dos eventos escolhem a letra numa lista (themeUtils) e vão

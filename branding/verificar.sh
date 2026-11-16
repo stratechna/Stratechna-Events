@@ -67,6 +67,7 @@ printf '%s' "$H" | grep -q 'href="/stratechna/aspecto.css' && ok "login liga a f
 printf '%s' "$H" | grep -q 'fonts.bunny.net\|fonts.googleapis' && falha "login ainda pede letras de fora" || ok "login sem letras de fora"
 A=$(curl -fsS "$B/stratechna/aspecto.css")
 echo "$A" | grep -q -- '--mantine-color-secondary-5: #b20009' && ok "aspecto.css servida com as fichas" || falha "aspecto.css não servida"
+echo "$A" | grep -q -- '--hi-link-color: #2b3b44' && ok "ligações em ardósia" || falha "ligações não estão em ardósia"
 curl -fsS "$B/stratechna/fonts.css" | grep -q 'DM Sans' && ok "fonts.css servida" || falha "fonts.css não servida"
 W=$(curl -fsS "$B/stratechna/fonts/dm-sans-latin-wght-normal.woff2" | head -c 4)
 [ "$W" = "wOF2" ] && ok "woff2 servida" || falha "woff2 não servida («$W»)"

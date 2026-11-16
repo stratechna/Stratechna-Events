@@ -66,3 +66,26 @@ html body, button, input, select, textarea {
   font-family: var(--mantine-font-family);
 }
 ::selection { background: rgba(178, 0, 9, .16); }
+
+/* Ligações: ardósia, sublinhadas ao passar — o vermelho é só do botão principal.
+ * As folhas do upstream pintam as âncoras com a cor secundária (que aqui é a de
+ * acção) ou com a primária «filled»; redefinem-se essas fichas só nas âncoras
+ * que não são botões. A cor de destaque que o organizador escolhe para as
+ * páginas públicas (--checkout-accent) não se toca. */
+html:root { --hi-link-color: #2b3b44; }
+a:not(.mantine-Button-root),
+.mantine-Anchor-root:not(.mantine-Button-root) {
+  --mantine-color-secondary-5: #2b3b44;
+  --mantine-color-secondary-6: #1a2a33;
+  --mantine-color-secondary-text: #2b3b44;
+  --mantine-color-anchor: #2b3b44;
+  --mantine-primary-color-filled: #2b3b44;
+}
+a:not(.mantine-Button-root):hover,
+.mantine-Anchor-root:not(.mantine-Button-root):hover {
+  --mantine-color-secondary-5: #1a2a33;
+  --mantine-color-anchor: #1a2a33;
+  --mantine-primary-color-filled: #1a2a33;
+  --hi-link-color: #1a2a33;
+  text-decoration: underline;
+}
