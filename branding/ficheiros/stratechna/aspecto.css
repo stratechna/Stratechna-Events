@@ -1,4 +1,4 @@
-/* Stratechna Events — paleta e letra Stratechna sobre o Hi.Events.
+/* Stratechna Events — paleta e letra Stratechna sobre a app de eventos de origem.
  *
  * Ficheiro próprio servido de /stratechna/ e ligado no index.html no lugar da
  * folha de letras do fonts.bunny.net (aplicar.py). As cores-base entram pela
@@ -28,7 +28,7 @@ html:root {
   --mantine-color-gray-8: #2d3b44;
   --mantine-color-gray-9: #18272f;
 
-  /* Cinzentos próprios do Hi.Events */
+  /* Cinzentos próprios da app (--hi-*) */
   --hi-color-gray: #f4f7f9;
   --hi-color-gray-2: #dee3e6;
   --hi-color-gray-dark: #7b858b;
